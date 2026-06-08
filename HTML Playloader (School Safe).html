@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HTML Playloader (School Safe)</title>
+<style>
+  body {
+    margin: 0;
+    background: #0b0c10;
+    color: #c5c6c7;
+    font-family: system-ui, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+  }
+
+  #dropZone {
+    padding: 2rem 3rem;
+    border: 3px dashed #45a29e;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 1.3rem;
+  }
+
+  #dropZone.dragover {
+    background: rgba(69, 162, 158, 0.15);
+    border-color: #66fcf1;
+  }
+
+  input[type="file"] {
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<div id="dropZone">Drop an HTML file here or click to choose</div>
+<input type="file" id="fileInput" accept=".html,.htm">
+
+<script>
+const dropZone = document.getElementById("dropZone");
+const fileInput = document.getElementById("fileInput");
+
+// Replace the entire page with the HTML file
+function loadAndReplace(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.open();
+    document.write(e.target.result);
+    document.close();
+  };
+  reader.readAsText(file);
+}
+
+// Click to open file dialog
+dropZone.onclick = () => fileInput.click();
+fileInput.onchange = e => loadAndReplace(e.target.files[0]);
+
+// Drag events
+["dragenter", "dragover"].forEach(eventName => {
+  dropZone.addEventListener(eventName, e => {
+    e.preventDefault();
+    dropZone.classList.add("dragover");
+  });
+});
+
+["dragleave", "drop"].forEach(eventName => {
+  dropZone.addEventListener(eventName, e => {
+    e.preventDefault();
+    dropZone.classList.remove("dragover");
+  });
+});
+
+// Handle drop
+dropZone.addEventListener("drop", e => {
+  const file = e.dataTransfer.files[0];
+  if (file) loadAndReplace(file);
+});
+
+// Prevent browser from opening dropped files
+window.addEventListener("dragover", e => e.preventDefault());
+window.addEventListener("drop", e => e.preventDefault());
+</script>
+
+</body>
+</html>
